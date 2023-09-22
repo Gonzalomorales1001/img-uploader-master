@@ -27,10 +27,12 @@ const Uploader = () => {
                         <div className="uploader-box uploader uploaded">
                             {error ? (
                                 <>
-                                    <div className='text-center'>
+                                    <div className="text-center">
                                         <span class="material-symbols-rounded cancel">cancel</span>
                                         <h2 className="uploader-title">Oops! Something went wrong...</h2>
                                         <p className="uploader-text">An error occurred while uploading the image</p>
+                                    </div>
+                                    <div className='text-center'>
                                         <button className="uploader-button">Try Again</button>
                                     </div>
                                 </>
@@ -62,7 +64,7 @@ const Uploader = () => {
 
                 )
             }
-            <address>created by <a href="http://" target="_blank" rel="noopener noreferrer">Gonzalomorales1001</a> - devChallenges.io</address>
+            <address>created by <a href="https://github.com/Gonzalomorales1001" target="_blank" rel="noopener noreferrer">Gonzalomorales1001</a> - devChallenges.io</address>
         </main>
     )
 }
