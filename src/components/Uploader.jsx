@@ -1,9 +1,31 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react';
+import { upload as sendImage } from '../helpers/upload';
 
 const Uploader = () => {
     const [uploading, setUploading] = useState(false);
     const [uploaded, setUploaded] = useState(null);
-    const [error, setError] = useState(false);
+    const [image, setImage] = useState(null);
+
+    useEffect(() => {
+        if (image) {
+            upload();
+        }
+    }, [image]);
+
+
+    const upload = async () => {
+        setUploading(true);
+        const formData = new FormData();
+        formData.set('image', image);
+        const resp = await sendImage(formData);
+        setUploaded({ link: resp.link, name: resp.name });
+        return setUploading(false);
+    }
+
+    const reset = () => {
+        setUploaded(null);
+        setUploading(false);
+    }
 
     const test = () => {
         setUploading(true);
@@ -25,31 +47,29 @@ const Uploader = () => {
                 ) : (
                     uploaded ? (
                         <div className="uploader-box uploader uploaded">
-                            {error ? (
+                            {uploaded.link ? (
                                 <>
-                                    <div className="text-center">
-                                        <span class="material-symbols-rounded cancel">cancel</span>
-                                        <h2 className="uploader-title">Oops! Something went wrong...</h2>
-                                        <p className="uploader-text">An error occurred while uploading the image</p>
-                                    </div>
-                                    <div className='text-center'>
-                                        <button className="uploader-button">Try Again</button>
+                                    <span className="material-symbols-rounded check-circle">check_circle</span>
+                                    <h2 className="uploader-title">Uploaded Successfully!</h2>
+                                    <img className='img-uploaded' src={uploaded.link} alt={uploaded.name} />
+                                    <div className="uploaded-link">
+                                        <p>{uploaded.link}</p>
+                                        <button className="uploader-button" onClick={() => navigator.clipboard.writeText(uploaded.link)}>Copy Link</button>
                                     </div>
                                 </>
                             ) : (
                                 <>
-                                    <span class="material-symbols-rounded check-circle">check_circle</span>
-                                    <h2 className="uploader-title">Uploaded Successfully!</h2>
-                                    <img className='img-uploaded' src="https://upload.wikimedia.org/wikipedia/en/2/27/Bliss_%28Windows_XP%29.png" alt="bliss" />
-                                    <div className="uploaded-link">
-                                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Optio consequatur delectus in culpa doloribus magni provident est quo quae. Repudiandae?</p>
-                                        <button className="uploader-button">Copy Link</button>
+                                    <div className="text-center">
+                                        <span className="material-symbols-rounded cancel">cancel</span>
+                                        <h2 className="uploader-title">Oops! Something went wrong...</h2>
+                                        <p className="uploader-text">An error occurred while uploading the image</p>
+                                        <button className="uploader-button" onClick={reset}>Try Again</button>
                                     </div>
                                 </>
                             )}
                         </div>
                     ) : (
-                        <div className="uploader-box uploader">
+                        <form id='uploader-form' encType='multipart/form-data' className="uploader-box uploader">
                             <h1 className='uploader-title'>Upload your image</h1>
                             <p className="uploader-subtitle">File should be Jpeg, Png...</p>
                             <div className="uploader__drag-drop">
@@ -57,8 +77,12 @@ const Uploader = () => {
                                 <p className='uploader-text'>Drag & Drop your image here</p>
                             </div>
                             <span className='uploader-text'>Or</span>
-                            <button className="uploader-button" onClick={test}>Choose your file</button>
-                        </div>
+                            <button className="uploader-button" onClick={test} type='button'>
+                                Choose your file
+                            </button>
+                            <label htmlFor="image" className='d-none'>image</label>
+                            <input type="file" name="image" id="image" accept='jpg,.jpeg,.png,.gif,.webp' onChange={(e) => setImage(e.target.files[0])} />
+                        </form>
 
                     )
 
