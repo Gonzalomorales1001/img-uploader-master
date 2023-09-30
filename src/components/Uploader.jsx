@@ -1,10 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { upload as sendImage } from '../helpers/upload';
+import Overlay from 'react-bootstrap/Overlay';
+import Tooltip from 'react-bootstrap/Tooltip';
 
 const Uploader = () => {
     const [uploading, setUploading] = useState(false);
     const [uploaded, setUploaded] = useState(null);
     const [image, setImage] = useState(null);
+
+    const [show, setShow] = useState(false);
+    const target = useRef(null);
 
     useEffect(() => {
         if (image) {
@@ -12,13 +17,12 @@ const Uploader = () => {
         }
     }, [image]);
 
-
     const upload = async () => {
         setUploading(true);
         const formData = new FormData();
         formData.set('image', image);
         const resp = await sendImage(formData);
-        setUploaded({ link: resp.link, name: resp.name });
+        setUploaded({ link: resp.link, name: resp.name, error: resp.error });
         return setUploading(false);
     }
 
@@ -51,10 +55,17 @@ const Uploader = () => {
                                 <>
                                     <span className="material-symbols-rounded check-circle">check_circle</span>
                                     <h2 className="uploader-title">Uploaded Successfully!</h2>
-                                    <img className='img-uploaded' src={uploaded.link} alt={uploaded.name} />
+                                    <img className='img-uploaded' src={uploaded.link} alt={`${uploaded.name} preview`} />
                                     <div className="uploaded-link">
                                         <p>{uploaded.link}</p>
-                                        <button className="uploader-button" onClick={() => navigator.clipboard.writeText(uploaded.link)}>Copy Link</button>
+                                        <button className="uploader-button" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom" data-bs-content="Copied!" ref={target} onClick={() => { navigator.clipboard.writeText(uploaded.link); setShow(!show) }}>Copy Link</button>
+                                        <Overlay target={target.current} show={show} placement="right">
+                                            {(props) => (
+                                                <Tooltip id="overlay-example" {...props}>
+                                                    Copied!
+                                                </Tooltip>
+                                            )}
+                                        </Overlay>
                                     </div>
                                 </>
                             ) : (
@@ -62,7 +73,8 @@ const Uploader = () => {
                                     <div className="text-center">
                                         <span className="material-symbols-rounded cancel">cancel</span>
                                         <h2 className="uploader-title">Oops! Something went wrong...</h2>
-                                        <p className="uploader-text">An error occurred while uploading the image</p>
+                                        <p className="uploader-subtitle">An error occurred while uploading the image</p>
+                                        <p className="uploader-text">{uploaded.error}</p>
                                         <button className="uploader-button" onClick={reset}>Try Again</button>
                                     </div>
                                 </>
