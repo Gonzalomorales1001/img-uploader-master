@@ -55,7 +55,7 @@ const Uploader = () => {
                                 <>
                                     <span className="material-symbols-rounded check-circle">check_circle</span>
                                     <h2 className="uploader-title">Uploaded Successfully!</h2>
-                                    <img className='img-uploaded' src={uploaded.link} alt={`${uploaded.name} preview`} />
+                                    <img className='img-uploaded' src={URL.createObjectURL(image)} alt={`${uploaded.name} preview`} />
                                     <div className="uploaded-link">
                                         <p>{uploaded.link}</p>
                                         <button className="uploader-button" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom" data-bs-content="Copied!" ref={target} onClick={() => { navigator.clipboard.writeText(uploaded.link); setShow(!show) }}>Copy Link</button>
@@ -87,13 +87,13 @@ const Uploader = () => {
                             <div className="uploader__drag-drop">
                                 <img src='/image.svg' alt="drag and drop" />
                                 <p className='uploader-text'>Drag & Drop your image here</p>
+                                <input type="file" name="image" id="image" accept='jpg,.jpeg,.png,.gif,.webp' onChange={(e) => setImage(e.target.files[0])} />
                             </div>
                             <span className='uploader-text'>Or</span>
-                            <button className="uploader-button" onClick={test} type='button'>
+                            <label className="uploader-button" type='button'>
                                 Choose your file
-                            </button>
-                            <label htmlFor="image" className='d-none'>image</label>
-                            <input type="file" name="image" id="image" accept='jpg,.jpeg,.png,.gif,.webp' onChange={(e) => setImage(e.target.files[0])} />
+                                <input type="file" name="image" id="image" accept='jpg,.jpeg,.png,.gif,.webp' onChange={(e) => setImage(e.target.files[0])} />
+                            </label>
                         </form>
 
                     )
